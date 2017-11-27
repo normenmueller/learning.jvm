@@ -1,5 +1,4 @@
-package learning
-package concurrency
+package learning.concurrency
 package promises
 package myfuture
 
