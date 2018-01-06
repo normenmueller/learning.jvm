@@ -1,3 +1,9 @@
-fpinscala/
-.settings/
+.idea
+.settings
+.classpath
+.project
 target/
+bin/
+tags
+
+spark.old/
