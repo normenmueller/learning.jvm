@@ -1,7 +1,9 @@
-package learning
-package concurrency
+package learning.concurrency
 package futures
 package map
+
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 object Main extends AnyRef with App {
 
@@ -39,19 +41,22 @@ object Main extends AnyRef with App {
    * original future 
    */
 
-  val fut2: Future[Int] = fut1 map f map g 
+  val fut2: Future[Int] = fut1 map f map g
 
+  while(!fut2.isCompleted) {
+    print(".")
+    Thread.sleep(500)
+  }
+  //println(Await.result(fut2, Duration.Inf))
 
   /* polling to demo non-blocking execution of `f`, i.e., the subsequent loop is
    * running w/o interruption but the console output is interleaved with outputs
    * from `fut1` and `f`.
    */
 
-  for (n <- 1 to 200) {
-    println(f"$n%02d: Fut1 is completed: ${fut1.isCompleted} | Fut2 is completed: ${fut2.isCompleted}")
-    Thread.sleep(100)
-  }
+//  for (n <- 1 to 200) {
+//    println(f"$n%02d: Fut1 is completed: ${fut1.isCompleted} | Fut2 is completed: ${fut2.isCompleted}")
+//    Thread.sleep(100)
+//  }
 
 }
-
-// vim: set tw=80:
