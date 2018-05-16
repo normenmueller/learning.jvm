@@ -1,0 +1,257 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>mdpm</title>
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link type="text/css" media="screen" rel="stylesheet" href="../lib/template.css" />
+      <script type="text/javascript" src="../lib/jquery.js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+    
+        </head>
+        <body onload="sh_highlightDocument('../lib/', '.min.js');" class="value">
+      <div id="definition">
+        <img src="../lib/package_big.png" />
+        
+        <h1>mdpm</h1>
+      </div>
+
+      <h4 class="signature" id="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">mdpm</span>
+      </span>
+      </h4>
+      
+      <div class="fullcommenttop" id="comment"><div class="comment cmt"><p><a href="file:///Users/nmueller/Google%20Drive/Documents/Odersky/2005/Scalable%20component%20abstractions/Odersky%20-%202005%20-%20Scalable%20component%20abstractions.pdf">Scalable Component Abstraction</a> | Abstract Type Members</p><p>Author: Normen Müller (normen.mueller@gmail.com) | Date: 8/7/12 11:12 AM
+</p></div></div>
+    
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input accesskey="/" type="text" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div class="types members" id="types">
+              <h3>Type Members</h3>
+              <ol><li visbl="pub" name="mdpm.SubjectObserver" data-isabs="true">
+      <a id="SubjectObserver:SubjectObserver"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="SubjectObserver.html"><span class="name">SubjectObserver</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.TextClient" data-isabs="false">
+      <a id="TextClient:TextClient"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="TextClient.html"><span class="name">TextClient</span></a><span class="result"> extends TwitterClientComponent with TwitterClientUIComponent with TwitterLocalCacheComponent with TwitterServiceComponent</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.Tweet" data-isabs="false">
+      <a id="Tweet:Tweet"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="Tweet.html"><span class="name">Tweet</span></a><span class="params">(<span name="tweeter">tweeter: TwitterUserProfile</span>, <span name="message">message: String</span>, <span name="time">time: Date</span>)</span><span class="result"> extends Product with Serializable</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.Tweeter" data-isabs="true">
+      <a id="Tweeter:Tweeter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="Tweeter.html"><span class="name">Tweeter</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.TwitterClientComponent" data-isabs="true">
+      <a id="TwitterClientComponent:TwitterClientComponent"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="TwitterClientComponent.html"><span class="name">TwitterClientComponent</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Annotations</dt><dd>
+                <span class="name">@ComposedComponent</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li visbl="pub" name="mdpm.TwitterClientUIComponent" data-isabs="true">
+      <a id="TwitterClientUIComponent:TwitterClientUIComponent"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="TwitterClientUIComponent.html"><span class="name">TwitterClientUIComponent</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Annotations</dt><dd>
+                <span class="name">@Component</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li visbl="pub" name="mdpm.TwitterLocalCacheComponent" data-isabs="true">
+      <a id="TwitterLocalCacheComponent:TwitterLocalCacheComponent"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="TwitterLocalCacheComponent.html"><span class="name">TwitterLocalCacheComponent</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Annotations</dt><dd>
+                <span class="name">@Component</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li visbl="pub" name="mdpm.TwitterServiceComponent" data-isabs="true">
+      <a id="TwitterServiceComponent:TwitterServiceComponent"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="TwitterServiceComponent.html"><span class="name">TwitterServiceComponent</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Annotations</dt><dd>
+                <span class="name">@Component</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li visbl="pub" name="mdpm.TwitterUserProfile" data-isabs="false">
+      <a id="TwitterUserProfile:TwitterUserProfile"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="TwitterUserProfile.html"><span class="name">TwitterUserProfile</span></a><span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
+
+        
+
+        <div class="values members" id="values">
+              <h3>Value Members</h3>
+              <ol><li visbl="pub" name="mdpm.Main" data-isabs="false">
+      <a id="Main:Main"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Main$.html"><span class="name">Main</span></a><span class="result"> extends App</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.abs" data-isabs="false">
+      <a id="abs:abs"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="abs/package.html"><span class="name">abs</span></a>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.di" data-isabs="false">
+      <a id="di:di"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="di/package.html"><span class="name">di</span></a>
+      </span>
+      </h4>
+      <p class="comment cmt"><b>Resources</b></p>
+    </li><li visbl="pub" name="mdpm.v1" data-isabs="false">
+      <a id="v1:v1"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="v1/package.html"><span class="name">v1</span></a>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.v2" data-isabs="false">
+      <a id="v2:v2"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="v2/package.html"><span class="name">v2</span></a>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

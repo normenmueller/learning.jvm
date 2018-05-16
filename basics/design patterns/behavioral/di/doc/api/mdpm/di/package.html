@@ -1,0 +1,386 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>mdpm.di</title>
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link type="text/css" media="screen" rel="stylesheet" href="../../lib/template.css" />
+      <script type="text/javascript" src="../../lib/jquery.js"></script>
+      <script type="text/javascript" src="../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../lib/template.js"></script>
+      <script type="text/javascript" src="../../lib/tools.tooltip.js"></script>
+    
+        </head>
+        <body onload="sh_highlightDocument('../lib/', '.min.js');" class="value">
+      <div id="definition">
+        <img src="../../lib/package_big.png" />
+        <p id="owner"><a name="mdpm" class="extype" href="../package.html">mdpm</a></p>
+        <h1>di</h1>
+      </div>
+
+      <h4 class="signature" id="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">di</span>
+      </span>
+      </h4>
+      
+      <div class="fullcommenttop" id="comment"><div class="comment cmt"><p><b>Resources</b></p><ul><li><a href="file:///Users/nmueller/Google%20Drive/Documents/Odersky/2005/Scalable%20component%20abstractions/Odersky%20-%202005%20-%20Scalable%20component%20abstractions.pdf">Odersky, Scalable Component Abstraction</a></li><li><a href="file:///Users/nmueller/Google%20Drive/Documents/Boner/2008/Dependency%20Injection/Boner%20-%202008%20-%20Dependency%20Injection.pdf">Boner, Dependency Injection</a></li></ul><p><b>Introduction</b></p><p>An important requirement for components is that they are <i>reusable</i>; that is, that they should be applicable in
+contexts other that the one in which they have been developed.</p><p>Generally, one requires that component reuse should be possible without modifiying a component's source code. To
+enable safe reuse, a component needs to have <i>interfaces</i> for <b>provided</b> as well as for <b>required</b>
+services through which interactions with other components occur. To enable flexible reuse in new contexts, a
+component should also minimize &quot;hard links&quot; to specific other components which it requires for functioning.</p><p>For example, let's consider the following <a name="mdpm.di.v1.UserRepository" class="extype" href="v1/UserRepository.html">UserRepository</a> (DAO) and <a name="mdpm.di.v1.UserService" class="extype" href="v1/UserService.html">UserService</a>
+implementation:</p><pre>
+@Service <span class="kw">class</span> UserRepository {
+  <span class="kw">def</span> authenticate(user: User): User = ...
+  <span class="kw">def</span> create(user: User) = ...
+  <span class="kw">def</span> delete(user: User) = ...
+}
+
+@Service <span class="kw">class</span> UserService {
+  <span class="kw">private</span> <span class="kw">val</span> userRepository = <span class="kw">new</span> UserRepository <span class="cmt">// <<< hard wired dependency</span>
+  <span class="kw">def</span> authenticate(name: <span class="std">String</span>, password: <span class="std">String</span>): User = userRepository.authenticate(User(name, password))
+  <span class="kw">def</span> create(name: <span class="std">String</span>, password: <span class="std">String</span>): User = userRepository.create(User(name, password))
+  <span class="kw">def</span> delete(name: <span class="std">String</span>): <span class="std">Unit</span> = userRepository.delete(User(name, <span class="lit">""</span>))
+}
+</pre><p>Here we can see that we are referencing an instance of the <a name="mdpm.di.v1.UserRepository" class="extype" href="v1/UserRepository.html">UserRepository</a>. This is the dependency
+that we would like to have injected for us, that is, we want to remove the &quot;hard link&quot;.</p><p>Unfortunately most mainstream languages (e.g. Java, C#) lack the capability to abstract over the services that are
+required (<a name="mdpm.di.v1.UserService" class="extype" href="v1/UserService.html">UserService</a> requires <a name="mdpm.di.v1.UserRepository" class="extype" href="v1/UserRepository.html">UserRepository</a>). Consequently, most software modules
+are written with hard references to required modules. It is then not possible to reuse a module in a new context
+that refines or refactors some of those required modules (e.g. reusing <a name="mdpm.di.v1.UserService" class="extype" href="v1/UserService.html">UserService</a> within a new
+context refining <i>UserRepository</i>).</p><p><b>Goal</b>
+<blockquote>
+  Ideally, it should be possible to lift an arbitrary system of software components with static data and hard
+  references, resulting in a system with the same structure, but with neither static data nor hard references. The
+  result of such a lifting should create components that are first-class values.
+</blockquote></p><p><b>Solution</b></p><ul><li><i>Abstract type members</i><br/> provide a flexible way to <b>abstract over concrete types</b> of components</li><li><i>Selftype annotations</i><br/> allow one to attach a programmer defined type to <code>this</code>. This turns out to be
+  a convenient way to <b>express required services</b> of a component at the level where it connects with other
+  components.</li><li><i>Modular mixin composition</i><br/> provides a flexible way to <b>compose components</b> and component
+  types</li></ul><p><b>Scala's constructs for type abstraction</b></p><p>There are two principal forms of abstraction in programming languages:</p><ul><li>parameterization --&gt; FP</li><li>abstract members --&gt; OO</li></ul><p>Scala supports both styles of abstraction uniformly for types as well as values. The utilized language features are
+<i>abstract type member</i>, <i>abstract value member</i>, <i>path-dependent types</i>, <i>type selection</i>, <i>singleton
+types</i>, and <i>parameter bounds</i>.</p><p><b>Scala's constructs for class composition</b></p><p>Mixin class composition in Scala is a fusion of the object-oriented, linear mixin composition and the more
+symmetric approaches of mixin modules and traits. The utilized language features are <i>class linearization</i>,
+<i>membership</i>, <i>super calls</i>.</p><p><b>Scala's constructs for dependency declaration</b></p><p>Scala's selftype annotations provide an alternative way [to mixin-class composition] of associating a class with
+an abstract type. Note, selftypes turned out to be the key construct for lifting static systems to component-based
+systems.</p><p><code>=&gt;</code> These constructs for type abstraction, composition, and dependency declaration form the basis of
+<b>service-oriented software component model</b>.</p><p><b>Service-Oriented Component Model</b></p><p>_Software components are units of computation that provide a well-defined set of services_. Typically, a software
+component is not self-contained, i.e., its service implementations rely on a set of required services provided by
+other cooperating components.</p><p>In our model
+<table border="1" width="100%" cellspacing="10">
+  <tr><td>Software components</td><td>correspond to</td><td>classes / traits</td></tr>
+  <tr><td>Concrete members of a class</td><td>represent provided</td><td>services</td></tr>
+  <tr><td>Abstract members of a class</td><td>represent required</td><td>services</td></tr>
+  <tr><td>Component composition</td><td>is based on</td><td>mixins</td></tr>
+</table></p><p>So, back to our <code>UserRepository</code> example, let's a create respective software components (recall, software
+_components_ are units of computation that <i>provide</i> a well-defined set of _services_).  <code>UserRepository</code> is a
+service. So, in order to stick to the definition of terms, we need a _software component_ that provides this
+service. In addition, recall the fact, that in our model, software components correspond to classes/ traits
+(e.g. <a name="mdpm.di.v2.UserRepositoryComponent" class="extype" href="v2/UserRepositoryComponent.html">UserRepositoryComponent</a>) and concrete members (e.g. <code>userRepository</code>) represent
+_provided services_.</p><pre>
+@Component <span class="kw">trait</span> UserRepositoryComponent {
+  @ProvidedService <span class="kw">val</span> userRepository = <span class="kw">new</span> UserRepository
+
+  @ServiceImplementation <span class="kw">private</span> [UserRepositoryComponent] <span class="kw">class</span> UserRepository {
+    <span class="kw">def</span> authenticate(user: User): User = { println(<span class="lit">"authenticate %s"</span> format user); user }
+    <span class="kw">def</span> create(user: User) = println(<span class="lit">"create %s"</span> format user)
+    <span class="kw">def</span> delete(user: User) = println(<span class="lit">"delete %s"</span> format user)
+  }
+}
+</pre><p>Now let's look at the <code>UserService</code>, the user of the repository. In order to declare that we would like to
+have the <code>userRepository</code> instance injected in the <code>UserService</code> we will first do what we did with the
+repository above; wrap the it in an enclosing (namespace) trait (a software component, say;
+<a name="mdpm.di.v2.UserServiceComponent" class="extype" href="v2/UserServiceComponent.html">UserServiceComponent</a>) and use a selftype annotation to declare our need for the <code>UserRepository</code>
+service.</p><pre>
+@Component <span class="kw">trait</span> UserServiceComponent { self: UserRepositoryComponent @RequiredService <span class="kw">=&gt;</span>
+  @ProvidedService <span class="kw">val</span> userService = <span class="kw">new</span> UserService
+
+  @ServiceImplementation <span class="kw">private</span> [UserServiceComponent] <span class="kw">class</span> UserService {
+    <span class="kw">def</span> authenticate(name: <span class="std">String</span>, password: <span class="std">String</span>): User = userRepository.authenticate(User(name, password))
+    <span class="kw">def</span> create(name: <span class="std">String</span>, password: <span class="std">String</span>): User = { <span class="kw">val</span> user = User(name, password); userRepository.create(User(name, password)); user }
+    <span class="kw">def</span> delete(name: <span class="std">String</span>): <span class="std">Unit</span> = userRepository.delete(User(name, <span class="lit">""</span>))
+  }
+}
+</pre><p>Now we have declared the <code>UserRepository</code> dependency. What is left is the actual wiring. In order to do that the
+only thing we need to do is to merge/join the different namespaces (software components) into one single
+application (or module) namespace. This is done by creating a <i>module</i> object composed of all our components.
+When we do that all wiring is happening automatically.</p><p>N.B. An _object_ whose primary purpose is giving its members a namespace is sometimes called a <i>module</i>.</p><pre>
+  @ComposedComponent <span class="kw">object</span> ComponentRegistry <span class="kw">extends</span> <span class="std">AnyRef</span>
+    <span class="kw">with</span> UserServiceComponent
+    <span class="kw">with</span> UserRepositoryComponent
+
+  <span class="kw">object</span> Main <span class="kw">extends</span> <span class="std">App</span> {
+    <span class="kw">import</span> ComponentRegistry._
+
+    userService.authenticate(<span class="lit">"Normen"</span>, <span class="lit">"foobar"</span>)
+  }
+</pre><p>So far so good? Well, no. We have strong coupling between the service implementation and its creation,
+the wiring configuration is scattered all over our code base; utterly inflexible.</p><p>Instead of instantiating the services in their enclosing component trait, let's change it to an abstract
+member field.</p><pre>
+@Component <span class="kw">trait</span> UserRepositoryComponent {
+  @ProvidedService <span class="kw">val</span> userRepository: UserRepository
+
+  @ServiceImplementation <span class="kw">class</span> UserRepository {
+    <span class="kw">def</span> authenticate(user: User): User = { println(<span class="lit">"authenticate %s"</span> format user); user }
+    <span class="kw">def</span> create(user: User) = println(<span class="lit">"create %s"</span> format user)
+    <span class="kw">def</span> delete(user: User) = println(<span class="lit">"delete %s"</span> format user)
+  }
+}
+@Component <span class="kw">trait</span> UserServiceComponent { self: UserRepositoryComponent @RequiredService <span class="kw">=&gt;</span>
+  @ProvidedService <span class="kw">val</span> userService: UserService
+
+  @ServiceImplementation <span class="kw">class</span> UserService {
+    <span class="kw">def</span> authenticate(name: <span class="std">String</span>, password: <span class="std">String</span>): User = userRepository.authenticate(User(name, password))
+    <span class="kw">def</span> create(name: <span class="std">String</span>, password: <span class="std">String</span>): User = { <span class="kw">val</span> user = User(name, password); userRepository.create(User(name, password)); user }
+    <span class="kw">def</span> delete(name: <span class="std">String</span>): <span class="std">Unit</span> = userRepository.delete(User(name, <span class="lit">""</span>))
+  }
+}
+</pre><p>Now, we can move the instantiation (and configuration) of the services to the <code>ComponentRegistry</code> module.
+_The neat thing is that we can here switch between different implementations of the services_.</p><pre>
+@ComposedComponent <span class="kw">object</span> ComponentRegistry <span class="kw">extends</span> <span class="std">AnyRef</span>
+  <span class="kw">with</span> UserServiceComponent
+  <span class="kw">with</span> UserRepositoryComponent {
+    @ProvidedService <span class="kw">val</span> userRepository  = <span class="kw">new</span> UserRepository @ServiceImplementation
+    @ProvidedService <span class="kw">val</span> userService     = <span class="kw">new</span> UserService    @ServiceImplementation
+}
+</pre><p>Finally we demonstrate Scala's fully mighty in implementing a <b>Service-Oriented Component Model</b></p><pre>
+@Component <span class="kw">trait</span> UserRepositoryComponent {
+  @ProvidedService <span class="kw">def</span> userRepository: UserRepository = <span class="kw">new</span> DefaultUserRepository  *
+  <span class="cmt">// provided service specification</span>
+  @Service <span class="kw">trait</span> UserRepository {
+    <span class="kw">def</span> authenticate(user: User): User
+    <span class="kw">def</span> create(user: User)
+    <span class="kw">def</span> delete(user: User)
+  }
+  <span class="cmt">// provided default service implementation</span>
+  @ServiceImplementation <span class="kw">private</span> <span class="kw">class</span> DefaultUserRepository <span class="kw">extends</span> UserRepository {
+    <span class="kw">override</span> <span class="kw">def</span> authenticate(user: User): User = { println(<span class="lit">"[default] authenticated %s"</span> format user); user }
+    <span class="kw">override</span> <span class="kw">def</span> create(user: User) = println(<span class="lit">"[default] created %s"</span> format user)
+    <span class="kw">override</span> <span class="kw">def</span> delete(user: User) = println(<span class="lit">"[default] deleted %s"</span> format user)
+  }
+}
+@Component <span class="kw">trait</span> UserServiceComponent { self: UserRepositoryComponent @RequiredService <span class="kw">=&gt;</span>
+  @ProvidedService <span class="kw">def</span> userService: UserService = <span class="kw">new</span> DefaultUserService
+  <span class="cmt">// provided service specification</span>
+  @Service <span class="kw">trait</span> UserService {
+    <span class="kw">def</span> authenticate(name: <span class="std">String</span>, password: <span class="std">String</span>): User
+    <span class="kw">def</span> create(name: <span class="std">String</span>, password: <span class="std">String</span>): User
+    <span class="kw">def</span> delete(name: <span class="std">String</span>): <span class="std">Unit</span>
+  }
+  <span class="cmt">// provided default service implementation</span>
+  @ServiceImplementation <span class="kw">private</span> <span class="kw">class</span> DefaultUserService <span class="kw">extends</span> UserService {
+    <span class="kw">override</span> <span class="kw">def</span> authenticate(name: <span class="std">String</span>, password: <span class="std">String</span>): User = userRepository.authenticate(User(name, password))
+    <span class="kw">override</span> <span class="kw">def</span> create(name: <span class="std">String</span>, password: <span class="std">String</span>): User = { <span class="kw">val</span> user = User(name, password); userRepository.create(User(name, password)); user }
+    <span class="kw">override</span> <span class="kw">def</span> delete(name: <span class="std">String</span>): <span class="std">Unit</span> = userRepository.delete(User(name, <span class="lit">""</span>))
+  }
+}
+<span class="cmt">// an alternative component, say, alternative service implementations</span>
+@Component <span class="kw">trait</span> SimpleUserRepositoryComponent <span class="kw">extends</span> UserRepositoryComponent {
+  @ProvidedService <span class="kw">override</span> <span class="kw">val</span> userRepository = <span class="kw">new</span> UserRepository {
+    <span class="kw">override</span> <span class="kw">def</span> authenticate(user: User): User = { println(<span class="lit">"[simple] authenticated %s"</span> format user); user }
+    <span class="kw">override</span> <span class="kw">def</span> create(user: User) = println(<span class="lit">"[simple] created %s"</span> format user)
+    <span class="kw">override</span> <span class="kw">def</span> delete(user: User) = println(<span class="lit">"[simple] deleted %s"</span> format user)
+  }
+}
+
+<span class="kw">object</span> DefaultComponentRegistry <span class="kw">extends</span> <span class="std">AnyRef</span> <span class="kw">with</span> UserServiceComponent <span class="kw">with</span> UserRepositoryComponent
+
+<span class="kw">object</span> SimpleComponentRegistry <span class="kw">extends</span> <span class="std">AnyRef</span> <span class="kw">with</span> UserServiceComponent <span class="kw">with</span> SimpleUserRepositoryComponent
+
+<span class="kw">object</span> Main <span class="kw">extends</span> <span class="std">App</span> {
+  DefaultComponentRegistry.userService.authenticate(<span class="lit">"Normen"</span>, <span class="lit">"foobar"</span>)
+  SimpleComponentRegistry.userService.authenticate(<span class="lit">"Normen"</span>, <span class="lit">"foobar"</span>)
+}
+</pre><p>Author: Normen Müller (normen.mueller@gmail.com) | Date: 8/7/12 11:12 AM
+</p></div></div>
+    
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input accesskey="/" type="text" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div class="types members" id="types">
+              <h3>Type Members</h3>
+              <ol><li visbl="pub" name="mdpm.di.Component" data-isabs="false">
+      <a id="Component:Component"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="Component.html"><span class="name">Component</span></a><span class="result"> extends Annotation with StaticAnnotation</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.di.ComposedComponent" data-isabs="false">
+      <a id="ComposedComponent:ComposedComponent"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ComposedComponent.html"><span class="name">ComposedComponent</span></a><span class="result"> extends Component</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.di.Implementation" data-isabs="false">
+      <a id="Implementation:Implementation"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="Implementation.html"><span class="name">Implementation</span></a><span class="result"> extends Annotation with StaticAnnotation</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.di.ProvidedService" data-isabs="false">
+      <a id="ProvidedService:ProvidedService"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ProvidedService.html"><span class="name">ProvidedService</span></a><span class="result"> extends Service</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.di.RequiredService" data-isabs="false">
+      <a id="RequiredService:RequiredService"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="RequiredService.html"><span class="name">RequiredService</span></a><span class="result"> extends Service</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.di.Service" data-isabs="false">
+      <a id="Service:Service"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="Service.html"><span class="name">Service</span></a><span class="result"> extends Annotation with StaticAnnotation</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.di.ServiceImplementation" data-isabs="false">
+      <a id="ServiceImplementation:ServiceImplementation"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ServiceImplementation.html"><span class="name">ServiceImplementation</span></a><span class="result"> extends Implementation</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.di.User" data-isabs="false">
+      <a id="User:User"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="User.html"><span class="name">User</span></a><span class="params">(<span name="name">name: String</span>, <span name="password">password: String</span>)</span><span class="result"> extends Product with Serializable</span>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
+
+        
+
+        <div class="values members" id="values">
+              <h3>Value Members</h3>
+              <ol><li visbl="pub" name="mdpm.di.v1" data-isabs="false">
+      <a id="v1:v1"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="v1/package.html"><span class="name">v1</span></a>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.di.v2" data-isabs="false">
+      <a id="v2:v2"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="v2/package.html"><span class="name">v2</span></a>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.di.v3" data-isabs="false">
+      <a id="v3:v3"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="v3/package.html"><span class="name">v3</span></a>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="mdpm.di.v4" data-isabs="false">
+      <a id="v4:v4"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="v4/package.html"><span class="name">v4</span></a>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>
