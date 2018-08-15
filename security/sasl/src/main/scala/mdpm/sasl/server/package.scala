@@ -55,10 +55,10 @@ package object server {
     override val config: Map[String, String] = Map(
       Sasl.QOP -> "auth",
       Sasl.STRENGTH -> "high",
-      Sasl.MAX_BUFFER -> "XXX",
-      "javax.security.sasl.sendmaxbuffer" -> "XXX",
-      "com.sun.security.sasl.digest.realm" -> "XXX",
-      "com.sun.security.sasl.digest.utf8" -> "XXX"
+      // Sasl.MAX_BUFFER -> "XXX",
+      // "javax.security.sasl.sendmaxbuffer" -> "XXX",
+      // "com.sun.security.sasl.digest.realm" -> "XXX",
+      "com.sun.security.sasl.digest.utf8" -> "true"
     )
 
     override val policy: Map[String, String] = Map(
