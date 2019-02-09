@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <!-- https://logback.qos.ch/manual/layouts.html#formatModifiers -->
+      <pattern>%-5level %-60.100logger - %m%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="org.spark_project" level="WARN" />
+  <logger name="org.apache.spark"  level="INFO" />
+  <logger name="org.apache.hadoop" level="DEBUG" />
+  <logger name="io.netty"          level="WARN" />
+
+  <root level="DEBUG">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
