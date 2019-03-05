@@ -1,0 +1,1 @@
+Cf. https://mesosphere.com/careers/challenges/distributed-applications/
