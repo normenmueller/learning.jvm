@@ -1,0 +1,51 @@
+package de.mdpm.oauth2.changed;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.common.base.MoreObjects;
+import sample.helloworld.impl.OauthEvent;
+
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
+@JsonDeserialize
+public final class ChangedToken implements OauthEvent {
+    public final String grant_type;
+    public final String client_id;
+    public final String redirect_uri;
+    public final String client_secret;
+    public final String code;
+
+    @JsonCreator
+    public ChangedToken(String grant_type, String client_id, String redirect_uri, String client_secret, String code) {
+        this.grant_type = grant_type;
+        this.client_id = client_id;
+        this.redirect_uri = redirect_uri;
+        this.client_secret = client_secret;
+        this.code = code;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object another) {
+        if (this == another)
+            return true;
+        return another instanceof ChangedToken && equalTo((ChangedToken) another);
+    }
+
+    private boolean equalTo(ChangedToken another) {
+        return grant_type.equals(another.grant_type) && client_id.equals(another.client_id) && redirect_uri.equals(another.redirect_uri) && client_secret.equals(another.client_secret) && code.equals(another.code);
+    }
+
+    @Override
+    public int hashCode() {
+        int h = 31;
+        h = h * 17 + grant_type.hashCode() + client_id.hashCode() + redirect_uri.hashCode() + client_secret.hashCode() + code.hashCode();
+        return h;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper("ChangedToken").add("grant_type", grant_type).add("client_id", client_id).add("redirect_uri", redirect_uri).add("client_secret", client_secret).add("code", code).toString();
+    }
+}
